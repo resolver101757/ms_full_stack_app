@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY ["ScheduledTasks.csproj", "./"]
+# List contents for debugging
+
+RUN dotnet restore "ScheduledTasks.csproj"
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Install net-tools and procps
+RUN apt-get update && apt-get install -y net-tools procps
+
+# Set the entry point
+ENTRYPOINT ["dotnet", "out/ScheduledTasks.dll"]

@@ -1,0 +1,7 @@
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.csproj.AssemblyReference.cache
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.GeneratedMSBuildEditorConfig.editorconfig
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.AssemblyInfoInputs.cache
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.AssemblyInfo.cs
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.csproj.CoreCompileInputs.cache
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.MvcApplicationPartsAssemblyInfo.cs
+/home/ak/sheff_tech_attempt_2/backend/UserAPI/obj/Debug/net8.0/UserAPI.MvcApplicationPartsAssemblyInfo.cache

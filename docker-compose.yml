@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./audits:/app/audits
+    ports:
+      - "5000:5000"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    depends_on:
+      - backend
+  scheduledtasks:
+    build:
+      context: ./ScheduledTasks
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=UserDB;User Id=sa;Password=YourStrong@Passw0rd;Encrypt=True;TrustServerCertificate=True;
+  dbup:
+    build:
+      context: ./DbCreateLoad
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=UserDB;User Id=sa;Password=YourStrong@Passw0rd;Encrypt=True;TrustServerCertificate=True;  
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong@Passw0rd", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sqlserver_data:
+
