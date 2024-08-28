@@ -73,4 +73,4 @@ The connection string for the database is set in the environment variables for t
 
 - Multi-stage for dotnet container instead of using the base image
 - Convert ScheduledTasks and DbCreateLoad to use API instead of direct db access
-- Make home page prettier
+- Make home page prettier and Add CRUD.
