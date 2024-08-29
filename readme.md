@@ -74,3 +74,11 @@ The connection string for the database is set in the environment variables for t
 - Multi-stage for dotnet container instead of using the base image
 - Convert ScheduledTasks and DbCreateLoad to use API instead of direct db access
 - Make home page prettier
+- Add a refresh button to the home page to reload the data from the API
+- Add a delete button to the home page to delete the data from the API
+- Add a create button to the home page to create a new user in the API
+- Add a update button to the home page to update a user in the API
+- Add a get button to the home page to get a user from the API
+- Add a get all button to the home page to get all users from the API
+- Add a delete all button to the home page to delete all users from the API
+- Add a create all button to the home page to create all users from the API
