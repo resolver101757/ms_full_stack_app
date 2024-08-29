@@ -68,9 +68,3 @@ This project is a full-stack application consisting of a .NET backend API with a
 ## Configuration
 
 The connection string for the database is set in the environment variables for the backend, scheduled tasks, and DbUp services. If you need to modify it, update the `ConnectionStrings__DefaultConnection` in the docker-compose.yml file.
-
-# Todo 
-
-- Multi-stage for dotnet container instead of using the base image
-- Convert ScheduledTasks and DbCreateLoad to use API instead of direct db access
-- Make home page prettier

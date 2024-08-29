@@ -48,40 +48,76 @@ namespace UserAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
-            var user = await connection.QuerySingleOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
-            LogAudit("GetUser", $"Retrieved user with ID: {id}");
-            return user != null ? Ok(user) : NotFound();
+            try
+            { 
+                using var connection = new SqlConnection(_connectionString);
+                var user = await connection.QuerySingleOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
+                LogAudit("GetUser", $"Retrieved user with ID: {id}");
+                return user != null ? Ok(user) : NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting user with ID: {id}", id);
+                LogAudit("GetUser", $"Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
-            using var connection = new SqlConnection(_connectionString);
-            var sql = "INSERT INTO Users (Name, Email) VALUES (@Name, @Email); SELECT CAST(SCOPE_IDENTITY() as int)";
-            var id = await connection.ExecuteScalarAsync<int>(sql, user);
-            user.Id = id;
-            LogAudit("CreateUser", $"Created user with ID: {id}");
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                var sql = "INSERT INTO Users (Username, Email) VALUES (@Username, @Email); SELECT CAST(SCOPE_IDENTITY() as int)";
+                var id = await connection.ExecuteScalarAsync<int>(sql, user);
+                user.Id = id;
+                LogAudit("CreateUser", $"Created user with ID: {id}");
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating user");
+                LogAudit("CreateUser", $"Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
-            using var connection = new SqlConnection(_connectionString);
-            var sql = "UPDATE Users SET Name = @Name, Email = @Email WHERE Id = @Id";
-            var affectedRows = await connection.ExecuteAsync(sql, new { Id = id, user.Name, user.Email });
-            LogAudit("UpdateUser", $"Updated user with ID: {id}");
-            return affectedRows > 0 ? Ok(user) : NotFound();
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                var sql = "UPDATE Users SET Username = @Username, Email = @Email WHERE Id = @Id";
+                var affectedRows = await connection.ExecuteAsync(sql, new { Id = id, user.Username, user.Email });
+                LogAudit("UpdateUser", $"Updated user with ID: {id}");
+                return affectedRows > 0 ? Ok(user) : NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating user with ID: {id}", id);
+                LogAudit("UpdateUser", $"Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
-            var affectedRows = await connection.ExecuteAsync("DELETE FROM Users WHERE Id = @Id", new { Id = id });
-            LogAudit("DeleteUser", $"Deleted user with ID: {id}");
-            return affectedRows > 0 ? NoContent() : NotFound();
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                var affectedRows = await connection.ExecuteAsync("DELETE FROM Users WHERE Id = @Id", new { Id = id });
+               LogAudit("DeleteUser", $"Deleted user with ID: {id}");
+                return affectedRows > 0 ? NoContent() : NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting user with ID: {id}", id);
+                LogAudit("DeleteUser", $"Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
         }
     }
 }

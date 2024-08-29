@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Net.Http;
+using System.Net.Http.Json;
 using Topshelf;
-using Dapper; // Added this line
 
 class Program
 {
@@ -27,7 +27,13 @@ class Program
 public class UserCreationService
 {
     private Timer _timer;
-    private readonly string _connectionString = "Server=db; Database=UserDB; User Id=sa; Password=YourStrong@Passw0rd;Encrypt=True;TrustServerCertificate=True;";
+    private readonly HttpClient _httpClient;
+    private const string ApiUrl = "http://backend:5000/api/user";
+
+    public UserCreationService()
+    {
+        _httpClient = new HttpClient();
+    }
 
     public void Start()
     {
@@ -37,36 +43,27 @@ public class UserCreationService
     public void Stop()
     {
         _timer?.Dispose();
+        _httpClient.Dispose();
     }
 
-    private void CreateUser(object state)
+    private async void CreateUser(object state)
     {
         try
         {
-            using (var connection = new SqlConnection(_connectionString))
+            var newUser = new
             {
-                connection.Open();
-                
-                // Use a simple string for password
-                string password = "DemoPassword123!";
+                Username = $"User_{Guid.NewGuid().ToString("N").Substring(0, 8)}",
+                Email = $"user_{Guid.NewGuid().ToString("N").Substring(0, 8)}@example.com",
+                Password = "DemoPassword123!"
+            };
 
-                var userId = connection.ExecuteScalar<int>(@"
-                    INSERT INTO Users (Username, Email, PasswordHash, CreatedAt)
-                    OUTPUT INSERTED.Id
-                    VALUES (@Username, @Email, @PasswordHash, @CreatedAt)",
-                    new
-                    {
-                        Username = $"User_{Guid.NewGuid().ToString("N").Substring(0, 8)}",
-                        Email = $"user_{Guid.NewGuid().ToString("N").Substring(0, 8)}@example.com",
-                        PasswordHash = password, // Use the plain password string
-                        CreatedAt = DateTime.UtcNow
-                    });
+            var response = await _httpClient.PostAsJsonAsync(ApiUrl, newUser);
+            response.EnsureSuccessStatusCode();
 
-            }
+            Console.WriteLine($"User created: {newUser.Username}");
         }
         catch (Exception ex)
         {
-            // Enhance error logging
             Console.WriteLine($"Error creating user: {ex.Message}");
             Console.WriteLine($"Stack Trace: {ex.StackTrace}");
         }
